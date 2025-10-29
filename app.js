@@ -1,7 +1,7 @@
 class FlightAccountability {
     constructor() {
         this.cadets = [];
-        this.flightCommander = 'Sir/Ma\'am'; // Default, can be customized
+        this.flightName = 'Lima Flight'; // Default flight name
         this.init();
     }
 
@@ -130,8 +130,7 @@ class FlightAccountability {
         const accountedFor = present.length + late.length + absent.length;
         const unaccountedFor = unknown.length;
 
-        let statement = `Cadet ${this.flightCommander}, may I make a statement? `;
-        statement += `Flight's accountability is as follows: `;
+    let statement = `${this.flightName}'s accountability is as follows: `;
         statement += `${presentCount} of ${totalCadets} cadets present. `;
         statement += `${accountedFor} accounted for, ${unaccountedFor} unaccounted for.`;
 
@@ -148,9 +147,9 @@ class FlightAccountability {
         statementElement.textContent = statement;
     }
 
-    // Method to customize flight commander name
-    setFlightCommander(name) {
-        this.flightCommander = name;
+    // Method to customize flight name
+    setFlightName(name) {
+        this.flightName = name;
         this.updateStatement();
     }
 }
