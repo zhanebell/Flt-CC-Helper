@@ -2,7 +2,7 @@ class FlightAccountability {
     constructor() {
         this.cadets = [];
         this.flightName = 'Lima Flight'; // Default flight name
-        this.reorderTimeout = null; // For delayed reordering
+        this.sortByStatus = false; // Default to alphabetical sorting
         this.init();
     }
 
@@ -23,6 +23,20 @@ class FlightAccountability {
                 this.startAccountability();
             }
         });
+    }
+
+    bindSortToggle() {
+        const sortBtn = document.getElementById('sort-toggle');
+        if (sortBtn) {
+            sortBtn.addEventListener('click', () => this.toggleSort());
+        }
+    }
+
+    toggleSort() {
+        this.sortByStatus = !this.sortByStatus;
+        const sortBtn = document.getElementById('sort-toggle');
+        sortBtn.textContent = this.sortByStatus ? 'Sort: By Status' : 'Sort: Alphabetical';
+        this.renderCadetList();
     }
 
     startAccountability() {
@@ -53,22 +67,31 @@ class FlightAccountability {
         document.getElementById('input-section').style.display = 'none';
         // Show the cadet list section
         document.getElementById('cadet-list').classList.remove('hidden');
+        // Bind sort toggle after showing cadet list
+        this.bindSortToggle();
     }
 
     renderCadetList() {
         const container = document.getElementById('cadets-container');
         container.innerHTML = '';
 
-        // Sort cadets by status priority (unknown, late, absent, present) then alphabetically within each group
-        const statusOrder = { 'unknown': 0, 'late': 1, 'absent': 2, 'present': 3 };
-        const sortedCadets = [...this.cadets].sort((a, b) => {
-            // First sort by status priority
-            if (statusOrder[a.status] !== statusOrder[b.status]) {
-                return statusOrder[a.status] - statusOrder[b.status];
-            }
-            // Then sort alphabetically within the same status
-            return a.name.localeCompare(b.name);
-        });
+        // Sort cadets based on current sort mode
+        let sortedCadets;
+        if (this.sortByStatus) {
+            // Sort by status priority (unknown, late, absent, present) then alphabetically within each group
+            const statusOrder = { 'unknown': 0, 'late': 1, 'absent': 2, 'present': 3 };
+            sortedCadets = [...this.cadets].sort((a, b) => {
+                // First sort by status priority
+                if (statusOrder[a.status] !== statusOrder[b.status]) {
+                    return statusOrder[a.status] - statusOrder[b.status];
+                }
+                // Then sort alphabetically within the same status
+                return a.name.localeCompare(b.name);
+            });
+        } else {
+            // Sort alphabetically only
+            sortedCadets = [...this.cadets].sort((a, b) => a.name.localeCompare(b.name));
+        }
 
         sortedCadets.forEach((cadet, displayIndex) => {
             // Find original index for event handling
@@ -77,46 +100,37 @@ class FlightAccountability {
             const cadetDiv = document.createElement('div');
             cadetDiv.className = 'cadet-item';
             cadetDiv.setAttribute('data-status', cadet.status);
+            cadetDiv.setAttribute('data-index', originalIndex);
 
             cadetDiv.innerHTML = `
                 <span class="cadet-name">${cadet.name}</span>
-                <button class="status-button ${cadet.status}" data-index="${originalIndex}">
+                <span class="status-button ${cadet.status}">
                     ${this.getStatusText(cadet.status)}
-                </button>
+                </span>
             `;
 
             container.appendChild(cadetDiv);
         });
 
-        // Add event listeners to status buttons for cycling
-        container.querySelectorAll('.status-button').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const index = parseInt(e.target.getAttribute('data-index'));
+        // Add event listeners to entire cadet items for cycling
+        container.querySelectorAll('.cadet-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const index = parseInt(item.getAttribute('data-index'));
                 const currentStatus = this.cadets[index].status;
                 const newStatus = this.getNextStatus(currentStatus);
                 
                 this.cadets[index].status = newStatus;
                 
-                // Update button appearance immediately
-                e.target.className = `status-button ${newStatus}`;
-                e.target.textContent = this.getStatusText(newStatus);
+                // Update status display immediately
+                const statusSpan = item.querySelector('.status-button');
+                statusSpan.className = `status-button ${newStatus}`;
+                statusSpan.textContent = this.getStatusText(newStatus);
                 
                 // Update the visual indicator immediately
-                const cadetItem = e.target.closest('.cadet-item');
-                cadetItem.setAttribute('data-status', newStatus);
+                item.setAttribute('data-status', newStatus);
                 
                 // Update statement immediately
                 this.updateStatement();
-                
-                // Clear any existing reorder timeout
-                if (this.reorderTimeout) {
-                    clearTimeout(this.reorderTimeout);
-                }
-                
-                // Delay the re-rendering/reordering by 1.5 seconds
-                this.reorderTimeout = setTimeout(() => {
-                    this.renderCadetList();
-                }, 1500);
             });
         });
     }
@@ -159,15 +173,7 @@ class FlightAccountability {
 
         let statement = `${this.flightName}'s accountability is as follows: `;
         statement += `${presentCount} of ${totalCadets} cadets present. `;
-        statement += `${accountedFor} accounted for, ${unaccountedFor} unaccounted for.`;        if (late.length > 0) {
-            const lateNames = late.map(c => c.name).join(', ');
-            statement += `\n\n${late.length > 1 ? 'Cadets' : 'Cadet'} ${lateNames} will be attending late.`;
-        }
-
-        if (absent.length > 0) {
-            const absentNames = absent.map(c => c.name).join(', ');
-            statement += `\n\n${absent.length > 1 ? 'Cadets' : 'Cadet'} ${absentNames} will not be attending.`;
-        }
+        statement += `${accountedFor} accounted for, ${unaccountedFor} unaccounted for.`;
 
         statementElement.textContent = statement;
     }
