@@ -153,7 +153,7 @@ class FlightAccountability {
         
         const totalCadets = this.cadets.length;
         const presentCount = present.length;
-        const accountedFor = present.length + late.length + absent.length;
+        const accountedFor = late.length + absent.length; // Only late + absent (not present)
         const unaccountedFor = unknown.length;
 
     let statement = `${this.flightName}'s accountability is as follows: `;
