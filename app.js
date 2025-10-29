@@ -153,14 +153,13 @@ class FlightAccountability {
         
         const totalCadets = this.cadets.length;
         const presentCount = present.length;
-        const accountedFor = late.length + absent.length; // Only late + absent (not present)
-        const unaccountedFor = unknown.length;
+        // Of the non-present cadets: accounted for = late + absent, unaccounted for = unknown
+        const accountedFor = late.length + absent.length; // Non-present but status known
+        const unaccountedFor = unknown.length; // Non-present with unknown status
 
-    let statement = `${this.flightName}'s accountability is as follows: `;
+        let statement = `${this.flightName}'s accountability is as follows: `;
         statement += `${presentCount} of ${totalCadets} cadets present. `;
-        statement += `${accountedFor} accounted for, ${unaccountedFor} unaccounted for.`;
-
-        if (late.length > 0) {
+        statement += `${accountedFor} accounted for, ${unaccountedFor} unaccounted for.`;        if (late.length > 0) {
             const lateNames = late.map(c => c.name).join(', ');
             statement += `\n\n${late.length > 1 ? 'Cadets' : 'Cadet'} ${lateNames} will be attending late.`;
         }
