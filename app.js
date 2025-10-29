@@ -49,8 +49,9 @@ class FlightAccountability {
         this.renderCadetList();
         this.updateStatement();
         
-        // Hide input section and show the cadet list section
+        // Hide the entire input section (including the Start Accountability button)
         document.getElementById('input-section').style.display = 'none';
+        // Show the cadet list section
         document.getElementById('cadet-list').classList.remove('hidden');
     }
 
