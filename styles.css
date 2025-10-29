@@ -102,16 +102,6 @@ header h1 {
     background-color: #1d4ed8;
 }
 
-.btn-secondary {
-    background-color: #059669;
-    color: white;
-    margin-top: 1rem;
-}
-
-.btn-secondary:hover {
-    background-color: #047857;
-}
-
 .cadet-list {
     background: #2a2a2a;
     border-radius: 8px;
