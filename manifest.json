@@ -1,6 +1,6 @@
 {
-    "name": "Flight Commander Helper",
-    "short_name": "Flt CC Helper",
+    "name": "Flt/CC Accountability",
+    "short_name": "Flt/CC",
     "description": "A flight commander accountability helper for ROTC/Military units",
     "start_url": "./index.html",
     "display": "standalone",

@@ -13,11 +13,9 @@ class FlightAccountability {
 
     bindEvents() {
         const startBtn = document.getElementById('start-accountability');
-        const updateBtn = document.getElementById('update-statement');
         const cadetInput = document.getElementById('cadet-input');
 
         startBtn.addEventListener('click', () => this.startAccountability());
-        updateBtn.addEventListener('click', () => this.updateStatement());
 
         // Allow Enter key to start accountability
         cadetInput.addEventListener('keypress', (e) => {
