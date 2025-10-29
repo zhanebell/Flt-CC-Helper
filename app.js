@@ -38,11 +38,14 @@ class FlightAccountability {
             return;
         }
 
-        // Initialize cadets with default status
-        this.cadets = cadetNames.map(name => ({
-            name: name,
-            status: 'present' // Default to present
-        }));
+        // Initialize cadets with default status and add C/ prefix if not present
+        this.cadets = cadetNames.map(name => {
+            const formattedName = name.startsWith('C/') ? name : `C/${name}`;
+            return {
+                name: formattedName,
+                status: 'unknown' // Default to unknown
+            };
+        });
 
         this.renderCadetList();
         this.updateStatement();
@@ -62,22 +65,26 @@ class FlightAccountability {
 
             cadetDiv.innerHTML = `
                 <span class="cadet-name">${cadet.name}</span>
-                <select class="status-select" data-index="${index}">
-                    <option value="present" ${cadet.status === 'present' ? 'selected' : ''}>Present</option>
-                    <option value="late" ${cadet.status === 'late' ? 'selected' : ''}>Late</option>
-                    <option value="absent" ${cadet.status === 'absent' ? 'selected' : ''}>Absent</option>
-                </select>
+                <button class="status-button ${cadet.status}" data-index="${index}">
+                    ${this.getStatusText(cadet.status)}
+                </button>
             `;
 
             container.appendChild(cadetDiv);
         });
 
-        // Add event listeners to status selects
-        container.querySelectorAll('.status-select').forEach(select => {
-            select.addEventListener('change', (e) => {
+        // Add event listeners to status buttons for cycling
+        container.querySelectorAll('.status-button').forEach(button => {
+            button.addEventListener('click', (e) => {
                 const index = parseInt(e.target.getAttribute('data-index'));
-                const newStatus = e.target.value;
+                const currentStatus = this.cadets[index].status;
+                const newStatus = this.getNextStatus(currentStatus);
+                
                 this.cadets[index].status = newStatus;
+                
+                // Update button appearance
+                e.target.className = `status-button ${newStatus}`;
+                e.target.textContent = this.getStatusText(newStatus);
                 
                 // Update the visual indicator
                 const cadetItem = e.target.closest('.cadet-item');
@@ -86,6 +93,23 @@ class FlightAccountability {
                 this.updateStatement();
             });
         });
+    }
+
+    getStatusText(status) {
+        switch(status) {
+            case 'unknown': return 'UNKNOWN';
+            case 'present': return 'PRESENT';
+            case 'late': return 'LATE';
+            case 'absent': return 'ABSENT';
+            default: return 'UNKNOWN';
+        }
+    }
+
+    getNextStatus(currentStatus) {
+        const statusCycle = ['unknown', 'present', 'late', 'absent'];
+        const currentIndex = statusCycle.indexOf(currentStatus);
+        const nextIndex = (currentIndex + 1) % statusCycle.length;
+        return statusCycle[nextIndex];
     }
 
     updateStatement() {
@@ -99,11 +123,12 @@ class FlightAccountability {
         const present = this.cadets.filter(c => c.status === 'present');
         const late = this.cadets.filter(c => c.status === 'late');
         const absent = this.cadets.filter(c => c.status === 'absent');
+        const unknown = this.cadets.filter(c => c.status === 'unknown');
         
         const totalCadets = this.cadets.length;
         const presentCount = present.length;
         const accountedFor = present.length + late.length + absent.length;
-        const unaccountedFor = totalCadets - accountedFor;
+        const unaccountedFor = unknown.length;
 
         let statement = `Cadet ${this.flightCommander}, may I make a statement? `;
         statement += `Flight's accountability is as follows: `;
@@ -112,14 +137,12 @@ class FlightAccountability {
 
         if (late.length > 0) {
             const lateNames = late.map(c => c.name).join(', ');
-            const lateVerb = late.length === 1 ? 'will be attending' : 'will be attending';
-            statement += `\n\nCadet${late.length > 1 ? 's' : ''} ${lateNames} ${lateVerb} late.`;
+            statement += `\n\n${late.length > 1 ? 'Cadets' : 'Cadet'} ${lateNames} will be attending late.`;
         }
 
         if (absent.length > 0) {
             const absentNames = absent.map(c => c.name).join(', ');
-            const absentVerb = absent.length === 1 ? 'will not be attending' : 'will not be attending';
-            statement += `\n\nCadet${absent.length > 1 ? 's' : ''} ${absentNames} ${absentVerb}.`;
+            statement += `\n\n${absent.length > 1 ? 'Cadets' : 'Cadet'} ${absentNames} will not be attending.`;
         }
 
         statementElement.textContent = statement;
