@@ -2,6 +2,7 @@ class FlightAccountability {
     constructor() {
         this.cadets = [];
         this.flightName = 'Lima Flight'; // Default flight name
+        this.reorderTimeout = null; // For delayed reordering
         this.init();
     }
 
@@ -97,9 +98,26 @@ class FlightAccountability {
                 
                 this.cadets[index].status = newStatus;
                 
-                // Re-render the entire list to maintain sorting
-                this.renderCadetList();
+                // Update button appearance immediately
+                e.target.className = `status-button ${newStatus}`;
+                e.target.textContent = this.getStatusText(newStatus);
+                
+                // Update the visual indicator immediately
+                const cadetItem = e.target.closest('.cadet-item');
+                cadetItem.setAttribute('data-status', newStatus);
+                
+                // Update statement immediately
                 this.updateStatement();
+                
+                // Clear any existing reorder timeout
+                if (this.reorderTimeout) {
+                    clearTimeout(this.reorderTimeout);
+                }
+                
+                // Delay the re-rendering/reordering by 1.5 seconds
+                this.reorderTimeout = setTimeout(() => {
+                    this.renderCadetList();
+                }, 1500);
             });
         });
     }
