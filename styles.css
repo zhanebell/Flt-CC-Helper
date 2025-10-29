@@ -149,16 +149,18 @@ header h1 {
 }
 
 .status-button {
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
     border: none;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
-    min-width: 80px;
+    min-width: 70px;
+    max-width: 80px;
     transition: all 0.2s;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
 }
 
 .status-button:hover {
@@ -222,13 +224,16 @@ header h1 {
     }
     
     .cadet-item {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
     }
     
     .status-button {
-        width: 100%;
+        min-width: 65px;
+        max-width: 75px;
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
     }
 }
 

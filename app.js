@@ -50,7 +50,8 @@ class FlightAccountability {
         this.renderCadetList();
         this.updateStatement();
         
-        // Show the cadet list section
+        // Hide input section and show the cadet list section
+        document.getElementById('input-section').style.display = 'none';
         document.getElementById('cadet-list').classList.remove('hidden');
     }
 
@@ -58,14 +59,28 @@ class FlightAccountability {
         const container = document.getElementById('cadets-container');
         container.innerHTML = '';
 
-        this.cadets.forEach((cadet, index) => {
+        // Sort cadets by status priority (unknown, late, absent, present) then alphabetically within each group
+        const statusOrder = { 'unknown': 0, 'late': 1, 'absent': 2, 'present': 3 };
+        const sortedCadets = [...this.cadets].sort((a, b) => {
+            // First sort by status priority
+            if (statusOrder[a.status] !== statusOrder[b.status]) {
+                return statusOrder[a.status] - statusOrder[b.status];
+            }
+            // Then sort alphabetically within the same status
+            return a.name.localeCompare(b.name);
+        });
+
+        sortedCadets.forEach((cadet, displayIndex) => {
+            // Find original index for event handling
+            const originalIndex = this.cadets.findIndex(c => c.name === cadet.name && c.status === cadet.status);
+            
             const cadetDiv = document.createElement('div');
             cadetDiv.className = 'cadet-item';
             cadetDiv.setAttribute('data-status', cadet.status);
 
             cadetDiv.innerHTML = `
                 <span class="cadet-name">${cadet.name}</span>
-                <button class="status-button ${cadet.status}" data-index="${index}">
+                <button class="status-button ${cadet.status}" data-index="${originalIndex}">
                     ${this.getStatusText(cadet.status)}
                 </button>
             `;
@@ -82,14 +97,8 @@ class FlightAccountability {
                 
                 this.cadets[index].status = newStatus;
                 
-                // Update button appearance
-                e.target.className = `status-button ${newStatus}`;
-                e.target.textContent = this.getStatusText(newStatus);
-                
-                // Update the visual indicator
-                const cadetItem = e.target.closest('.cadet-item');
-                cadetItem.setAttribute('data-status', newStatus);
-                
+                // Re-render the entire list to maintain sorting
+                this.renderCadetList();
                 this.updateStatement();
             });
         });
