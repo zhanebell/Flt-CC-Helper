@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Commander Helper</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e40af">
+    
+    <!-- iOS PWA support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Flt CC Helper">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231e40af' width='192' height='192'/><circle fill='white' cx='96' cy='96' r='64'/><text x='96' y='110' font-family='Arial,sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='%231e40af'>FC</text></svg>">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Flight Commander Helper</h1>
+        </header>
+
+        <main>
+            <!-- Accountability Statement Display -->
+            <div id="accountability-display" class="statement-container">
+                <div class="statement-text" id="statement-text">
+                    Enter cadets below to generate accountability statement
+                </div>
+            </div>
+
+            <!-- Cadet Input Section -->
+            <div class="input-section">
+                <label for="cadet-input">Enter Cadets (comma separated):</label>
+                <textarea 
+                    id="cadet-input" 
+                    placeholder="Smith, Johnson, Williams, Brown, Jones"
+                    rows="3"
+                ></textarea>
+                <button id="start-accountability" class="btn btn-primary">
+                    Start Accountability
+                </button>
+            </div>
+
+            <!-- Cadet List Section -->
+            <div id="cadet-list" class="cadet-list hidden">
+                <h2>Cadets Accountability</h2>
+                <div id="cadets-container"></div>
+                <button id="update-statement" class="btn btn-secondary">
+                    Update Statement
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
