@@ -20,7 +20,7 @@ A Progressive Web App (PWA) designed to help flight commanders quickly manage an
 ## Generated Statement Format
 
 ```
-Cadet [flt/cc] may I make a statement? Flight's accountability is as follows: 
+Cadet [flt/cc] may I make a statement? Lima Flight's accountability is as follows: 
 # of # cadets present. # accounted for # unaccounted for. 
 Cadets [name], [name], and [name] will be attending late. 
 Cadets [name], [name], [name], will not be attending.
