@@ -3,12 +3,25 @@ class FlightAccountability {
         this.cadets = [];
         this.flightName = 'Lima Flight'; // Default flight name
         this.sortByStatus = false; // Default to alphabetical sorting
+        this.defaultCadets = [
+            'Allen', 'Aquino', 'Barron', 'Basto', 'Bell', 'Chenard', 'Harrison',
+            'Hill', 'Hunt', 'Kawelu', 'Loo', 'Martin', 'Miller', 'Orlino',
+            'Perez', 'Pregana', 'Rosete', 'Ruiz', 'Shank', 'Smith', 'True', 'Vinthaxay'
+        ];
         this.init();
     }
 
     init() {
         this.bindEvents();
+        this.applyDefaultCadets();
         this.updateStatement();
+    }
+
+    applyDefaultCadets() {
+        const cadetInput = document.getElementById('cadet-input');
+        if (cadetInput && !cadetInput.value.trim()) {
+            cadetInput.value = this.defaultCadets.join(', ');
+        }
     }
 
     bindEvents() {
